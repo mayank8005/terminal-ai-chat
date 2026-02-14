@@ -18,6 +18,8 @@ export default function Home() {
         if (data.authenticated) {
           setAuthed(true);
           setUsername(data.username);
+          const savedPass = sessionStorage.getItem("awt_pass");
+          if (savedPass) setPassword(savedPass);
         }
       })
       .finally(() => setLoading(false));
@@ -40,6 +42,7 @@ export default function Home() {
           onAuth={(user, pass) => {
             setUsername(user);
             setPassword(pass);
+            sessionStorage.setItem("awt_pass", pass);
             setAuthed(true);
           }}
           onGuest={() => {
@@ -62,6 +65,7 @@ export default function Home() {
           setIsGuest(false);
           setUsername("");
           setPassword("");
+          sessionStorage.removeItem("awt_pass");
         }}
       />
     </div>
