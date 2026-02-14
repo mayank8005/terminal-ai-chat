@@ -1,0 +1,7 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="76.8" fill="#141d2b"/>
+  <rect x="25.6" y="25.6" width="460.8" height="460.8" rx="51.2" fill="#1a2636" stroke="#2a3a50" stroke-width="10.24"/>
+  <text x="92.16" y="230.4" font-family="monospace" font-size="92.16" font-weight="bold" fill="#9fef00">&gt;_</text>
+  <text x="76.8" y="368.64" font-family="monospace" font-size="71.68" font-weight="bold" fill="#0dcdcd">AWT</text>
+</svg>

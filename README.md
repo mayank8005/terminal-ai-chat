@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Web Terminal
 
-## Getting Started
+A browser-based terminal-style AI chat app that connects to any LM Studio server. Built with the Ghostty "Box" theme aesthetic — dark background, bright green text, scanlines, CRT glow.
 
-First, run the development server:
+> **Warning:** This project was vibe coded with Claude Code. It may contain bugs, rough edges, and questionable architectural decisions. Use at your own risk. PRs welcome.
+
+## Features
+
+- Terminal-style UI with Ghostty Box theme colors
+- User signup/login with bcrypt-hashed passwords
+- Streaming responses from LM Studio (OpenAI-compatible API)
+- Thinking model support (auto-hides `<think>` blocks)
+- Slash commands with autocomplete (`/model`, `/server`, `/system`, `/stop`, `/cls`, `/help`, `/logout`)
+- System prompt encryption (AES-256-GCM, derived from user password)
+- Mobile-first PWA (installable, standalone mode)
+- Copy button on each message
+- SQLite database (zero external dependencies)
+- Dockerized
+
+## Prerequisites
+
+- Node.js 20+
+- [LM Studio](https://lmstudio.ai/) running with a model loaded and server started
+
+## Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Run in development mode
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:8800](http://localhost:8800)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run start
+```
 
-## Learn More
+## Docker
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# Build and run
+docker compose up --build
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Or manually
+docker build -t ai-web-terminal .
+docker run -p 8800:8800 -v awt-data:/app/data ai-web-terminal
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The app will be available at [http://localhost:8800](http://localhost:8800)
 
-## Deploy on Vercel
+## Environment Variables
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `JWT_SECRET` | `ai-web-terminal-secret-change-me` | Secret for signing JWT tokens |
+| `DB_PATH` | `./data/app.db` | Path to SQLite database file |
+| `PORT` | `8800` | Server port |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Slash Commands
+
+| Command | Description |
+|---------|-------------|
+| `/model` | Select AI model from LM Studio |
+| `/server` | Configure LM Studio server URL |
+| `/system` | Set/clear encrypted system prompt |
+| `/stop` | Stop current AI response |
+| `/cls` | Clear chat history |
+| `/help` | Show available commands |
+| `/logout` | Log out |
+
+## LM Studio Setup
+
+1. Download and install [LM Studio](https://lmstudio.ai/)
+2. Load a model
+3. Start the local server (default: `http://localhost:1234`)
+4. In the app, use `/server` to configure the URL if different
+
+## Tech Stack
+
+Next.js 15 (App Router), TypeScript, Tailwind CSS, SQLite (better-sqlite3), bcryptjs, jose (JWT), Web Crypto API (AES-256-GCM)

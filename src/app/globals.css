@@ -1,26 +1,133 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Ghostty "Box" theme palette
+ * bg:       #141d2b    fg:       #9fef00
+ * cursor:   #9fef00    sel-bg:   #a4b1cd    sel-fg: #141d2b
+ * black:    #000000    red:      #cc0403    green:  #19cb00
+ * yellow:   #cecb00    blue:     #0d73cc    magenta:#cb1ed1
+ * cyan:     #0dcdcd    white:    #dddddd    dim:    #767676
+ * br-red:   #f2201f    br-green: #23fd00    br-yellow:#fffd00
+ * br-blue:  #1a8fff    br-magenta:#fd28ff   br-cyan:#14ffff
+ */
+
+@theme {
+  --color-terminal-bg: #141d2b;
+  --color-terminal-bg-light: #1a2636;
+  --color-terminal-fg: #9fef00;
+  --color-terminal-green: #19cb00;
+  --color-terminal-green-bright: #23fd00;
+  --color-terminal-red: #cc0403;
+  --color-terminal-red-bright: #f2201f;
+  --color-terminal-yellow: #cecb00;
+  --color-terminal-yellow-bright: #fffd00;
+  --color-terminal-cyan: #0dcdcd;
+  --color-terminal-cyan-bright: #14ffff;
+  --color-terminal-blue: #0d73cc;
+  --color-terminal-blue-bright: #1a8fff;
+  --color-terminal-magenta: #cb1ed1;
+  --color-terminal-magenta-bright: #fd28ff;
+  --color-terminal-white: #dddddd;
+  --color-terminal-border: #2a3a50;
+  --color-terminal-dim-text: #767676;
+  --color-terminal-dim-bg: #1a2636;
+  --color-terminal-highlight: #1e2e42;
+  --color-terminal-selection-bg: #a4b1cd;
+  --color-terminal-selection-fg: #141d2b;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background-color: #141d2b;
+  color: #9fef00;
+  font-family: var(--font-mono), "JetBrains Mono", "Fira Code", "Cascadia Code",
+    "SF Mono", monospace;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #141d2b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a3a50;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a4a60;
+}
+
+/* Cursor blink animation */
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
+/* Scanline effect */
+.scanlines::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  z-index: 9999;
+}
+
+/* CRT glow effect - green glow matching Box fg */
+.crt-glow {
+  text-shadow: 0 0 2px rgba(159, 239, 0, 0.15);
+}
+
+/* Input autofill override */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill {
+  -webkit-text-fill-color: #9fef00;
+  -webkit-box-shadow: 0 0 0px 1000px #141d2b inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Selection - matches Box theme */
+::selection {
+  background: #a4b1cd;
+  color: #141d2b;
+}
+
+/* Mobile safe area */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
