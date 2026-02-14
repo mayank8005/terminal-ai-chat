@@ -22,10 +22,20 @@ export async function deriveKey(password: string, salt: Uint8Array): Promise<Cry
   );
 }
 
+function isSecureContext(): boolean {
+  return typeof crypto !== "undefined" && typeof crypto.subtle !== "undefined";
+}
+
 export async function encryptText(
   text: string,
   password: string
 ): Promise<{ ciphertext: string; iv: string }> {
+  if (!isSecureContext()) {
+    // Fallback: base64 encode when Web Crypto is unavailable (HTTP on non-localhost)
+    const encoded = btoa(unescape(encodeURIComponent(text)));
+    return { ciphertext: encoded, iv: "none" };
+  }
+
   const encoder = new TextEncoder();
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -53,6 +63,11 @@ export async function decryptText(
   ivB64: string,
   password: string
 ): Promise<string> {
+  if (ivB64 === "none") {
+    // Fallback: base64 decode (matches the non-secure-context encrypt path)
+    return decodeURIComponent(escape(atob(ciphertextB64)));
+  }
+
   const combined = Buffer.from(ciphertextB64, "base64");
   const iv = Buffer.from(ivB64, "base64");
 
