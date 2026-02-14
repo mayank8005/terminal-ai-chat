@@ -6,19 +6,18 @@ import ChatTerminal from "@/components/ChatTerminal";
 
 export default function Home() {
   const [authed, setAuthed] = useState(false);
+  const [isGuest, setIsGuest] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if already authenticated
     fetch("/api/auth/me")
       .then((r) => r.json())
       .then((data) => {
         if (data.authenticated) {
           setAuthed(true);
           setUsername(data.username);
-          // Password not available from session - user needs to re-enter for system prompt
         }
       })
       .finally(() => setLoading(false));
@@ -27,14 +26,14 @@ export default function Home() {
   if (loading) {
     return (
       <div className="h-dvh bg-terminal-bg flex items-center justify-center">
-        <div className="text-terminal-green animate-pulse font-mono">
+        <div className="text-terminal-fg animate-pulse font-mono">
           Initializing terminal...
         </div>
       </div>
     );
   }
 
-  if (!authed) {
+  if (!authed && !isGuest) {
     return (
       <div className="h-dvh scanlines crt-glow">
         <AuthTerminal
@@ -42,6 +41,10 @@ export default function Home() {
             setUsername(user);
             setPassword(pass);
             setAuthed(true);
+          }}
+          onGuest={() => {
+            setIsGuest(true);
+            setUsername("guest");
           }}
         />
       </div>
@@ -53,8 +56,10 @@ export default function Home() {
       <ChatTerminal
         username={username}
         password={password}
+        isGuest={isGuest}
         onLogout={() => {
           setAuthed(false);
+          setIsGuest(false);
           setUsername("");
           setPassword("");
         }}

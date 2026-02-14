@@ -5,11 +5,12 @@ import TerminalLogo from "./TerminalLogo";
 
 interface AuthTerminalProps {
   onAuth: (username: string, password: string) => void;
+  onGuest: () => void;
 }
 
 type AuthStep = "welcome" | "mode" | "username" | "password" | "processing";
 
-export default function AuthTerminal({ onAuth }: AuthTerminalProps) {
+export default function AuthTerminal({ onAuth, onGuest }: AuthTerminalProps) {
   const [mode, setMode] = useState<"login" | "signup" | null>(null);
   const [step, setStep] = useState<AuthStep>("welcome");
   const [username, setUsername] = useState("");
@@ -23,7 +24,7 @@ export default function AuthTerminal({ onAuth }: AuthTerminalProps) {
   useEffect(() => {
     setLines([
       { text: "Welcome to AI Web Terminal v1.0.0", type: "info" },
-      { text: "Type 'login' to sign in or 'signup' to create an account.", type: "info" },
+      { text: "Type 'login', 'signup', or 'guest' to continue.", type: "info" },
     ]);
     setStep("mode");
   }, []);
@@ -57,8 +58,12 @@ export default function AuthTerminal({ onAuth }: AuthTerminalProps) {
         setMode("signup");
         addLine("Choose a username (3-30 chars):", "prompt");
         setStep("username");
+      } else if (val.toLowerCase() === "guest") {
+        addLine("Entering guest mode...", "info");
+        addLine("Note: Settings won't be saved.", "prompt");
+        setTimeout(() => onGuest(), 500);
       } else {
-        addLine("Unknown command. Type 'login' or 'signup'.", "error");
+        addLine("Unknown command. Type 'login', 'signup', or 'guest'.", "error");
       }
       return;
     }
@@ -92,7 +97,7 @@ export default function AuthTerminal({ onAuth }: AuthTerminalProps) {
         } else {
           setError(data.error);
           addLine(`ERROR: ${data.error}`, "error");
-          addLine("Type 'login' or 'signup' to try again.", "info");
+          addLine("Type 'login', 'signup', or 'guest' to try again.", "info");
           setStep("mode");
           setMode(null);
           setUsername("");
@@ -100,7 +105,7 @@ export default function AuthTerminal({ onAuth }: AuthTerminalProps) {
         }
       } catch {
         addLine("ERROR: Connection failed.", "error");
-        addLine("Type 'login' or 'signup' to try again.", "info");
+        addLine("Type 'login', 'signup', or 'guest' to try again.", "info");
         setStep("mode");
         setMode(null);
         setUsername("");

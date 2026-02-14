@@ -1,19 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAuthUser } from "@/lib/auth";
 import { findUserById } from "@/lib/db";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const session = await getAuthUser();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const user = session ? findUserById(session.userId) : null;
 
-  const user = findUserById(session.userId);
-  if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
-
-  const lmStudioUrl = user.lm_studio_url || "http://localhost:1234";
+  // Guest users pass server URL as query param
+  const guestUrl = req.nextUrl.searchParams.get("serverUrl");
+  const lmStudioUrl = user?.lm_studio_url || guestUrl || "http://localhost:1234";
 
   try {
     const response = await fetch(`${lmStudioUrl}/v1/models`);

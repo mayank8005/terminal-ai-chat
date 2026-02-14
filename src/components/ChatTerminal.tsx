@@ -16,12 +16,14 @@ interface Message {
 interface ChatTerminalProps {
   username: string;
   password: string;
+  isGuest?: boolean;
   onLogout: () => void;
 }
 
 export default function ChatTerminal({
   username,
   password,
+  isGuest = false,
   onLogout,
 }: ChatTerminalProps) {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -44,19 +46,23 @@ export default function ChatTerminal({
   const modalTextareaRef = useRef<HTMLTextAreaElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Fetch initial settings
+  // Fetch initial settings (authenticated users only)
   useEffect(() => {
+    if (isGuest) return;
     fetch("/api/auth/me")
       .then((r) => r.json())
       .then((data) => {
         if (data.lmStudioUrl) setServerUrl(data.lmStudioUrl);
       });
-  }, []);
+  }, [isGuest]);
 
   // Fetch models
   const fetchModels = useCallback(async () => {
     try {
-      const res = await fetch("/api/models");
+      const url = isGuest
+        ? `/api/models?serverUrl=${encodeURIComponent(serverUrl)}`
+        : "/api/models";
+      const res = await fetch(url);
       const data = await res.json();
       if (data.data) {
         const modelIds = data.data.map((m: { id: string }) => m.id);
@@ -68,7 +74,7 @@ export default function ChatTerminal({
     } catch {
       // Models fetch failed silently
     }
-  }, [currentModel]);
+  }, [currentModel, isGuest, serverUrl]);
 
   useEffect(() => {
     fetchModels();
@@ -114,14 +120,18 @@ export default function ChatTerminal({
         setModalMode("server");
       },
     },
-    {
-      name: "system",
-      description: "Set system prompt (encrypted)",
-      action: () => {
-        setModalInput("");
-        setModalMode("system");
-      },
-    },
+    ...(!isGuest
+      ? [
+          {
+            name: "system",
+            description: "Set system prompt (encrypted)",
+            action: () => {
+              setModalInput("");
+              setModalMode("system");
+            },
+          },
+        ]
+      : []),
     {
       name: "stop",
       description: "Stop AI response",
@@ -227,7 +237,8 @@ export default function ChatTerminal({
             content: m.content,
           })),
           model: currentModel,
-          password,
+          password: isGuest ? undefined : password,
+          lmStudioUrl: isGuest ? serverUrl : undefined,
         }),
         signal: controller.signal,
       });
@@ -352,11 +363,13 @@ export default function ChatTerminal({
 
     if (modalMode === "server" && val) {
       setServerUrl(val);
-      await fetch("/api/settings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lmStudioUrl: val }),
-      });
+      if (!isGuest) {
+        await fetch("/api/settings", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lmStudioUrl: val }),
+        });
+      }
       fetchModels();
       setMessages((prev) => [
         ...prev,

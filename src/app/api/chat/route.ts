@@ -5,21 +5,14 @@ import { decryptText } from "@/lib/crypto";
 
 export async function POST(req: NextRequest) {
   const session = await getAuthUser();
-  if (!session) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+  const user = session ? findUserById(session.userId) : null;
 
-  const user = findUserById(session.userId);
-  if (!user) {
-    return new Response("User not found", { status: 404 });
-  }
+  const { messages, model, password, lmStudioUrl: guestUrl } = await req.json();
 
-  const { messages, model, password } = await req.json();
-
-  // Build message array with optional system prompt
+  // Build message array with optional system prompt (authenticated users only)
   const fullMessages = [...messages];
 
-  if (user.encrypted_system_prompt && user.system_prompt_iv && password) {
+  if (user?.encrypted_system_prompt && user.system_prompt_iv && password) {
     try {
       const systemPrompt = await decryptText(
         user.encrypted_system_prompt,
@@ -32,7 +25,8 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const lmStudioUrl = user.lm_studio_url || "http://localhost:1234";
+  // Authenticated users use saved URL, guests pass it in the request
+  const lmStudioUrl = user?.lm_studio_url || guestUrl || "http://localhost:1234";
 
   try {
     const response = await fetch(`${lmStudioUrl}/v1/chat/completions`, {
