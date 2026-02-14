@@ -1,8 +1,7 @@
 services:
   app:
     build: .
-    ports:
-      - "8800:8800"
+    network_mode: host
     volumes:
       - app-data:/app/data
     environment:
