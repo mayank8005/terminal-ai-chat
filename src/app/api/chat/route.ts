@@ -3,6 +3,8 @@ import { getAuthUser } from "@/lib/auth";
 import { findUserById } from "@/lib/db";
 import { decryptText } from "@/lib/crypto";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   const session = await getAuthUser();
   const user = session ? findUserById(session.userId) : null;
@@ -37,6 +39,7 @@ export async function POST(req: NextRequest) {
         messages: fullMessages,
         stream: true,
       }),
+      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -102,9 +105,10 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
     return new Response(
       JSON.stringify({
-        error: `Cannot connect to LM Studio at ${lmStudioUrl}. Make sure it's running.`,
+        error: `Cannot connect to LM Studio at ${lmStudioUrl} — ${msg}`,
       }),
       { status: 502, headers: { "Content-Type": "application/json" } }
     );

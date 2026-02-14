@@ -70,9 +70,20 @@ export default function ChatTerminal({
         if (!currentModel && modelIds.length > 0) {
           setCurrentModel(modelIds[0]);
         }
+      } else if (data.error) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "system" as const, content: `[ERROR] ${data.error}` },
+        ]);
       }
     } catch {
-      // Models fetch failed silently
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "system" as const,
+          content: `[ERROR] Cannot reach LM Studio at ${serverUrl}`,
+        },
+      ]);
     }
   }, [currentModel, isGuest, serverUrl]);
 
@@ -362,12 +373,20 @@ export default function ChatTerminal({
     const val = modalInput.trim();
 
     if (modalMode === "server" && val) {
-      setServerUrl(val);
+      // Normalize URL — add http:// if no protocol specified
+      let normalizedUrl = val;
+      if (!/^https?:\/\//i.test(normalizedUrl)) {
+        normalizedUrl = `http://${normalizedUrl}`;
+      }
+      // Remove trailing slash
+      normalizedUrl = normalizedUrl.replace(/\/+$/, "");
+
+      setServerUrl(normalizedUrl);
       if (!isGuest) {
         await fetch("/api/settings", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ lmStudioUrl: val }),
+          body: JSON.stringify({ lmStudioUrl: normalizedUrl }),
         });
       }
       fetchModels();
@@ -375,7 +394,7 @@ export default function ChatTerminal({
         ...prev,
         {
           role: "system",
-          content: `Server URL updated to: ${val}`,
+          content: `Server URL updated to: ${normalizedUrl}`,
         },
       ]);
     }
