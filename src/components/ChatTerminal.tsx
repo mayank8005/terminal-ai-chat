@@ -105,6 +105,26 @@ export default function ChatTerminal({
     }
   }, [modalMode]);
 
+  // Fix mobile keyboard pushing content out of view
+  const containerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const onResize = () => {
+      if (containerRef.current) {
+        containerRef.current.style.height = `${vv.height}px`;
+      }
+      // Scroll to bottom when keyboard opens/closes
+      requestAnimationFrame(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      });
+    };
+
+    vv.addEventListener("resize", onResize);
+    return () => vv.removeEventListener("resize", onResize);
+  }, []);
+
   // Slash commands
   const slashCommands: SlashCommand[] = [
     {
@@ -442,6 +462,7 @@ export default function ChatTerminal({
 
   return (
     <div
+      ref={containerRef}
       className="flex flex-col h-full bg-terminal-bg text-terminal-fg font-mono"
       onClick={() => !modalMode && inputRef.current?.focus()}
     >
@@ -552,7 +573,7 @@ export default function ChatTerminal({
       </div>
 
       {/* Input area */}
-      <div className="relative border-t border-terminal-border p-2">
+      <div className="relative border-t border-terminal-border p-3 pt-3">
         {showSlashMenu && (
           <SlashCommandMenu
             commands={slashCommands}
