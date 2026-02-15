@@ -39,6 +39,30 @@ export default function ChatTerminal({
   const [serverUrl, setServerUrl] = useState("");
   const [showHelp, setShowHelp] = useState(false);
   const [streamedContent, setStreamedContent] = useState("");
+  const [theme, setTheme] = useState("box");
+  const [thinkingEnabled, setThinkingEnabled] = useState(true);
+
+  const themes = [
+    { id: "box", name: "Box (Default)" },
+    { id: "dracula", name: "Dracula" },
+    { id: "monokai", name: "Monokai" },
+    { id: "solarized-dark", name: "Solarized Dark" },
+    { id: "gruvbox-dark", name: "Gruvbox Dark" },
+    { id: "catppuccin", name: "Catppuccin Mocha" },
+    { id: "nord", name: "Nord" },
+    { id: "vaporwave", name: "Vaporwave" },
+    { id: "cyberpunk", name: "Cyberpunk" },
+    { id: "matrix", name: "Matrix" },
+    { id: "eclipse", name: "Eclipse" },
+    { id: "rose", name: "Rosé" },
+    { id: "ocean", name: "Ocean" },
+    { id: "sunset", name: "Sunset" },
+    { id: "midnight", name: "Midnight" },
+    { id: "forest", name: "Forest" },
+    { id: "retro-amber", name: "Retro Amber" },
+    { id: "lavender", name: "Lavender" },
+    { id: "high-contrast", name: "High Contrast" },
+  ];
 
   const inputRef = useRef<HTMLInputElement>(null);
   const modalInputRef = useRef<HTMLInputElement>(null);
@@ -164,6 +188,28 @@ export default function ChatTerminal({
         ]
       : []),
     {
+      name: "theme",
+      description: "Change terminal theme",
+      action: () => setModalMode("theme"),
+    },
+    {
+      name: "thinking",
+      description: "Toggle AI thinking/reasoning",
+      action: () => {
+        setThinkingEnabled((prev) => {
+          const next = !prev;
+          setMessages((m) => [
+            ...m,
+            {
+              role: "system",
+              content: `Thinking ${next ? "enabled" : "disabled"}. ${next ? "Model will reason before responding." : "Model will respond directly (if supported)."}`,
+            },
+          ]);
+          return next;
+        });
+      },
+    },
+    {
       name: "stop",
       description: "Stop AI response",
       action: () => stopResponse(),
@@ -270,6 +316,7 @@ export default function ChatTerminal({
           model: currentModel,
           password: isGuest ? undefined : password,
           lmStudioUrl: isGuest ? serverUrl : undefined,
+          thinkingEnabled,
         }),
         signal: controller.signal,
       });
@@ -463,7 +510,7 @@ export default function ChatTerminal({
   return (
     <div
       ref={containerRef}
-      className="flex flex-col h-full bg-terminal-bg text-terminal-fg font-mono"
+      className={`flex flex-col h-full bg-terminal-bg text-terminal-fg font-mono${theme !== "box" ? ` theme-${theme}` : ""}`}
       onClick={() => !modalMode && inputRef.current?.focus()}
     >
       <TopMenu
@@ -487,10 +534,11 @@ export default function ChatTerminal({
           setStreamedContent("");
         }}
         onHelp={() => setShowHelp((h) => !h)}
+        onSelectTheme={() => setModalMode("theme")}
       />
 
       {/* Chat area */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-4">
+      <div className="flex-1 overflow-y-auto p-3 pb-5 space-y-4">
         {messages.length === 0 && !isStreaming && (
           <div className="text-terminal-fg text-sm space-y-2 pt-2 leading-relaxed">
             <div>Welcome, <span className="text-terminal-green-bright">{username}</span>. Type a message to start chatting.</div>
@@ -573,7 +621,7 @@ export default function ChatTerminal({
       </div>
 
       {/* Input area */}
-      <div className="relative border-t border-terminal-border p-3 pt-3">
+      <div className="relative border-t border-terminal-border px-4 py-3">
         {showSlashMenu && (
           <SlashCommandMenu
             commands={slashCommands}
@@ -597,7 +645,7 @@ export default function ChatTerminal({
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             placeholder={isStreaming ? "Type /stop to cancel..." : "Type a message or /command..."}
-            className="flex-1 bg-transparent outline-none text-terminal-fg caret-terminal-green placeholder:text-terminal-dim-text/40"
+            className="flex-1 bg-transparent outline-none text-terminal-fg caret-terminal-green placeholder:text-terminal-dim-text/40 py-1"
             autoFocus
             autoCapitalize="off"
             autoCorrect="off"
@@ -681,6 +729,44 @@ export default function ChatTerminal({
                     [ESC] Cancel
                   </button>
                 </div>
+              </div>
+            ) : modalMode === "theme" ? (
+              <div>
+                <div className="text-terminal-green font-bold mb-3">
+                  === Select Theme ===
+                </div>
+                <div className="text-terminal-dim-text text-xs mb-3">
+                  Theme resets on page refresh.
+                </div>
+                <div className="space-y-1 max-h-60 overflow-y-auto">
+                  {themes.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => {
+                        setTheme(t.id);
+                        setModalMode(null);
+                        setMessages((prev) => [
+                          ...prev,
+                          { role: "system", content: `Theme switched to: ${t.name}` },
+                        ]);
+                      }}
+                      className={`w-full text-left px-3 py-1.5 rounded text-sm transition-colors ${
+                        t.id === theme
+                          ? "bg-terminal-highlight text-terminal-green"
+                          : "text-terminal-dim-text hover:bg-terminal-highlight hover:text-terminal-fg"
+                      }`}
+                    >
+                      {t.id === theme && "> "}
+                      {t.name}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setModalMode(null)}
+                  className="mt-3 text-terminal-dim-text text-xs hover:text-terminal-fg"
+                >
+                  [ESC] Cancel
+                </button>
               </div>
             ) : modalMode === "system" ? (
               <div>

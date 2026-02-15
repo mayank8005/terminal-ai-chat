@@ -11,6 +11,7 @@ interface TopMenuProps {
   onLogout: () => void;
   onClear: () => void;
   onHelp: () => void;
+  onSelectTheme: () => void;
 }
 
 export default function TopMenu({
@@ -22,6 +23,7 @@ export default function TopMenu({
   onLogout,
   onClear,
   onHelp,
+  onSelectTheme,
 }: TopMenuProps) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -40,6 +42,7 @@ export default function TopMenu({
     { label: "Select Model", icon: "[M]", action: onSelectModel },
     { label: "Server Config", icon: "[S]", action: onConfigureServer },
     { label: "System Prompt", icon: "[P]", action: onSetSystemPrompt },
+    { label: "Theme", icon: "[T]", action: onSelectTheme },
     { label: "Clear Chat", icon: "[C]", action: onClear },
     { label: "Help", icon: "[?]", action: onHelp },
     { label: "Logout", icon: "[X]", action: onLogout },

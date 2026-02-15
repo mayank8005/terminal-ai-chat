@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   const session = await getAuthUser();
   const user = session ? findUserById(session.userId) : null;
 
-  const { messages, model, password, lmStudioUrl: guestUrl } = await req.json();
+  const { messages, model, password, lmStudioUrl: guestUrl, thinkingEnabled } = await req.json();
 
   // Build message array with optional system prompt (authenticated users only)
   const fullMessages = [...messages];
@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
         model: model || "default",
         messages: fullMessages,
         stream: true,
+        ...(thinkingEnabled === false && { enable_thinking: false }),
       }),
       cache: "no-store",
     });

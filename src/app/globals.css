@@ -45,8 +45,8 @@ html,
 body {
   height: 100%;
   overflow: hidden;
-  background-color: #141d2b;
-  color: #9fef00;
+  background-color: var(--color-terminal-bg);
+  color: var(--color-terminal-fg);
   font-family: var(--font-mono), "JetBrains Mono", "Fira Code", "Cascadia Code",
     "SF Mono", monospace;
 }
@@ -57,11 +57,11 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #141d2b;
+  background: var(--color-terminal-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2a3a50;
+  background: var(--color-terminal-border);
   border-radius: 3px;
 }
 
@@ -104,9 +104,9 @@ body {
   z-index: 9999;
 }
 
-/* CRT glow effect - green glow matching Box fg */
+/* CRT glow effect - uses theme fg color */
 .crt-glow {
-  text-shadow: 0 0 2px rgba(159, 239, 0, 0.15);
+  text-shadow: 0 0 2px color-mix(in srgb, var(--color-terminal-fg) 15%, transparent);
 }
 
 /* Input autofill override */
@@ -114,15 +114,15 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 textarea:-webkit-autofill {
-  -webkit-text-fill-color: #9fef00;
-  -webkit-box-shadow: 0 0 0px 1000px #141d2b inset;
+  -webkit-text-fill-color: var(--color-terminal-fg);
+  -webkit-box-shadow: 0 0 0px 1000px var(--color-terminal-bg) inset;
   transition: background-color 5000s ease-in-out 0s;
 }
 
-/* Selection - matches Box theme */
+/* Selection - matches theme */
 ::selection {
-  background: #a4b1cd;
-  color: #141d2b;
+  background: var(--color-terminal-selection-bg);
+  color: var(--color-terminal-selection-fg);
 }
 
 /* Mobile safe area */
@@ -130,4 +130,474 @@ textarea:-webkit-autofill {
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
+}
+
+/* ===== Terminal Themes ===== */
+
+/* Dracula */
+.theme-dracula {
+  --color-terminal-bg: #282a36;
+  --color-terminal-bg-light: #2d303d;
+  --color-terminal-fg: #f8f8f2;
+  --color-terminal-green: #50fa7b;
+  --color-terminal-green-bright: #69ff94;
+  --color-terminal-red: #ff5555;
+  --color-terminal-red-bright: #ff6e6e;
+  --color-terminal-yellow: #f1fa8c;
+  --color-terminal-yellow-bright: #ffffa5;
+  --color-terminal-cyan: #8be9fd;
+  --color-terminal-cyan-bright: #a4ffff;
+  --color-terminal-blue: #6272a4;
+  --color-terminal-blue-bright: #bd93f9;
+  --color-terminal-magenta: #ff79c6;
+  --color-terminal-magenta-bright: #ff92df;
+  --color-terminal-white: #f8f8f2;
+  --color-terminal-border: #44475a;
+  --color-terminal-dim-text: #6272a4;
+  --color-terminal-dim-bg: #2d303d;
+  --color-terminal-highlight: #44475a;
+  --color-terminal-selection-bg: #44475a;
+  --color-terminal-selection-fg: #f8f8f2;
+}
+
+/* Monokai */
+.theme-monokai {
+  --color-terminal-bg: #272822;
+  --color-terminal-bg-light: #2d2e27;
+  --color-terminal-fg: #f8f8f2;
+  --color-terminal-green: #a6e22e;
+  --color-terminal-green-bright: #b6f23e;
+  --color-terminal-red: #f92672;
+  --color-terminal-red-bright: #ff4488;
+  --color-terminal-yellow: #e6db74;
+  --color-terminal-yellow-bright: #f0e584;
+  --color-terminal-cyan: #66d9ef;
+  --color-terminal-cyan-bright: #76e9ff;
+  --color-terminal-blue: #66d9ef;
+  --color-terminal-blue-bright: #76e9ff;
+  --color-terminal-magenta: #ae81ff;
+  --color-terminal-magenta-bright: #be91ff;
+  --color-terminal-white: #f8f8f2;
+  --color-terminal-border: #49483e;
+  --color-terminal-dim-text: #75715e;
+  --color-terminal-dim-bg: #2d2e27;
+  --color-terminal-highlight: #49483e;
+  --color-terminal-selection-bg: #49483e;
+  --color-terminal-selection-fg: #f8f8f2;
+}
+
+/* Solarized Dark */
+.theme-solarized-dark {
+  --color-terminal-bg: #002b36;
+  --color-terminal-bg-light: #073642;
+  --color-terminal-fg: #839496;
+  --color-terminal-green: #859900;
+  --color-terminal-green-bright: #95a900;
+  --color-terminal-red: #dc322f;
+  --color-terminal-red-bright: #ec423f;
+  --color-terminal-yellow: #b58900;
+  --color-terminal-yellow-bright: #c59910;
+  --color-terminal-cyan: #2aa198;
+  --color-terminal-cyan-bright: #3ab1a8;
+  --color-terminal-blue: #268bd2;
+  --color-terminal-blue-bright: #369be2;
+  --color-terminal-magenta: #d33682;
+  --color-terminal-magenta-bright: #e34692;
+  --color-terminal-white: #eee8d5;
+  --color-terminal-border: #073642;
+  --color-terminal-dim-text: #586e75;
+  --color-terminal-dim-bg: #073642;
+  --color-terminal-highlight: #073642;
+  --color-terminal-selection-bg: #586e75;
+  --color-terminal-selection-fg: #002b36;
+}
+
+/* Gruvbox Dark */
+.theme-gruvbox-dark {
+  --color-terminal-bg: #282828;
+  --color-terminal-bg-light: #3c3836;
+  --color-terminal-fg: #ebdbb2;
+  --color-terminal-green: #b8bb26;
+  --color-terminal-green-bright: #c8cb36;
+  --color-terminal-red: #cc241d;
+  --color-terminal-red-bright: #fb4934;
+  --color-terminal-yellow: #d79921;
+  --color-terminal-yellow-bright: #fabd2f;
+  --color-terminal-cyan: #689d6a;
+  --color-terminal-cyan-bright: #8ec07c;
+  --color-terminal-blue: #458588;
+  --color-terminal-blue-bright: #83a598;
+  --color-terminal-magenta: #b16286;
+  --color-terminal-magenta-bright: #d3869b;
+  --color-terminal-white: #ebdbb2;
+  --color-terminal-border: #3c3836;
+  --color-terminal-dim-text: #928374;
+  --color-terminal-dim-bg: #3c3836;
+  --color-terminal-highlight: #3c3836;
+  --color-terminal-selection-bg: #504945;
+  --color-terminal-selection-fg: #ebdbb2;
+}
+
+/* Catppuccin Mocha */
+.theme-catppuccin {
+  --color-terminal-bg: #1e1e2e;
+  --color-terminal-bg-light: #262637;
+  --color-terminal-fg: #cdd6f4;
+  --color-terminal-green: #a6e3a1;
+  --color-terminal-green-bright: #b6f3b1;
+  --color-terminal-red: #f38ba8;
+  --color-terminal-red-bright: #ff9bb8;
+  --color-terminal-yellow: #f9e2af;
+  --color-terminal-yellow-bright: #fff2bf;
+  --color-terminal-cyan: #94e2d5;
+  --color-terminal-cyan-bright: #a4f2e5;
+  --color-terminal-blue: #89b4fa;
+  --color-terminal-blue-bright: #99c4ff;
+  --color-terminal-magenta: #cba6f7;
+  --color-terminal-magenta-bright: #dbb6ff;
+  --color-terminal-white: #cdd6f4;
+  --color-terminal-border: #313244;
+  --color-terminal-dim-text: #6c7086;
+  --color-terminal-dim-bg: #262637;
+  --color-terminal-highlight: #313244;
+  --color-terminal-selection-bg: #45475a;
+  --color-terminal-selection-fg: #cdd6f4;
+}
+
+/* Nord */
+.theme-nord {
+  --color-terminal-bg: #2e3440;
+  --color-terminal-bg-light: #3b4252;
+  --color-terminal-fg: #d8dee9;
+  --color-terminal-green: #a3be8c;
+  --color-terminal-green-bright: #b3ce9c;
+  --color-terminal-red: #bf616a;
+  --color-terminal-red-bright: #cf717a;
+  --color-terminal-yellow: #ebcb8b;
+  --color-terminal-yellow-bright: #fbdb9b;
+  --color-terminal-cyan: #88c0d0;
+  --color-terminal-cyan-bright: #8fbcbb;
+  --color-terminal-blue: #5e81ac;
+  --color-terminal-blue-bright: #81a1c1;
+  --color-terminal-magenta: #b48ead;
+  --color-terminal-magenta-bright: #c49ebd;
+  --color-terminal-white: #eceff4;
+  --color-terminal-border: #3b4252;
+  --color-terminal-dim-text: #4c566a;
+  --color-terminal-dim-bg: #3b4252;
+  --color-terminal-highlight: #434c5e;
+  --color-terminal-selection-bg: #4c566a;
+  --color-terminal-selection-fg: #eceff4;
+}
+
+/* Vaporwave — aesthetic retro vibes */
+.theme-vaporwave {
+  --color-terminal-bg: #1a1026;
+  --color-terminal-bg-light: #231533;
+  --color-terminal-fg: #ff71ce;
+  --color-terminal-green: #01cdfe;
+  --color-terminal-green-bright: #05fffe;
+  --color-terminal-red: #ff6c6b;
+  --color-terminal-red-bright: #ff8a8a;
+  --color-terminal-yellow: #fffb96;
+  --color-terminal-yellow-bright: #ffffa6;
+  --color-terminal-cyan: #01cdfe;
+  --color-terminal-cyan-bright: #05fffe;
+  --color-terminal-blue: #b967ff;
+  --color-terminal-blue-bright: #c97fff;
+  --color-terminal-magenta: #ff71ce;
+  --color-terminal-magenta-bright: #ff8de0;
+  --color-terminal-white: #f0e6ff;
+  --color-terminal-border: #3d2256;
+  --color-terminal-dim-text: #8a6aad;
+  --color-terminal-dim-bg: #231533;
+  --color-terminal-highlight: #3d2256;
+  --color-terminal-selection-bg: #b967ff;
+  --color-terminal-selection-fg: #1a1026;
+}
+
+/* Cyberpunk — neon-lit future */
+.theme-cyberpunk {
+  --color-terminal-bg: #0a0e14;
+  --color-terminal-bg-light: #131920;
+  --color-terminal-fg: #00ff9c;
+  --color-terminal-green: #00ff9c;
+  --color-terminal-green-bright: #33ffb0;
+  --color-terminal-red: #ff003c;
+  --color-terminal-red-bright: #ff3366;
+  --color-terminal-yellow: #fffc58;
+  --color-terminal-yellow-bright: #fffd7a;
+  --color-terminal-cyan: #00e5ff;
+  --color-terminal-cyan-bright: #33ecff;
+  --color-terminal-blue: #0066ff;
+  --color-terminal-blue-bright: #3388ff;
+  --color-terminal-magenta: #ff00a0;
+  --color-terminal-magenta-bright: #ff33b8;
+  --color-terminal-white: #e0f0e0;
+  --color-terminal-border: #1a2a35;
+  --color-terminal-dim-text: #4a6a5a;
+  --color-terminal-dim-bg: #131920;
+  --color-terminal-highlight: #1a2a35;
+  --color-terminal-selection-bg: #00ff9c;
+  --color-terminal-selection-fg: #0a0e14;
+}
+
+/* Matrix — classic green-on-black */
+.theme-matrix {
+  --color-terminal-bg: #0a0a0a;
+  --color-terminal-bg-light: #111111;
+  --color-terminal-fg: #00ff41;
+  --color-terminal-green: #00ff41;
+  --color-terminal-green-bright: #33ff66;
+  --color-terminal-red: #ff0000;
+  --color-terminal-red-bright: #ff3333;
+  --color-terminal-yellow: #ccff00;
+  --color-terminal-yellow-bright: #ddff33;
+  --color-terminal-cyan: #00ffcc;
+  --color-terminal-cyan-bright: #33ffdd;
+  --color-terminal-blue: #0099ff;
+  --color-terminal-blue-bright: #33aaff;
+  --color-terminal-magenta: #ff00ff;
+  --color-terminal-magenta-bright: #ff33ff;
+  --color-terminal-white: #ccffcc;
+  --color-terminal-border: #1a2a1a;
+  --color-terminal-dim-text: #338833;
+  --color-terminal-dim-bg: #111111;
+  --color-terminal-highlight: #1a2a1a;
+  --color-terminal-selection-bg: #00ff41;
+  --color-terminal-selection-fg: #0a0a0a;
+}
+
+/* Eclipse — clean dark IDE feel */
+.theme-eclipse {
+  --color-terminal-bg: #1e1e1e;
+  --color-terminal-bg-light: #252526;
+  --color-terminal-fg: #d4d4d4;
+  --color-terminal-green: #6a9955;
+  --color-terminal-green-bright: #7ec879;
+  --color-terminal-red: #f44747;
+  --color-terminal-red-bright: #ff6b6b;
+  --color-terminal-yellow: #dcdcaa;
+  --color-terminal-yellow-bright: #ececbb;
+  --color-terminal-cyan: #4ec9b0;
+  --color-terminal-cyan-bright: #5ed9c0;
+  --color-terminal-blue: #569cd6;
+  --color-terminal-blue-bright: #9cdcfe;
+  --color-terminal-magenta: #c586c0;
+  --color-terminal-magenta-bright: #d596d0;
+  --color-terminal-white: #d4d4d4;
+  --color-terminal-border: #333333;
+  --color-terminal-dim-text: #808080;
+  --color-terminal-dim-bg: #252526;
+  --color-terminal-highlight: #2d2d2d;
+  --color-terminal-selection-bg: #264f78;
+  --color-terminal-selection-fg: #d4d4d4;
+}
+
+/* Rosé — warm magenta and soft tones */
+.theme-rose {
+  --color-terminal-bg: #1e1228;
+  --color-terminal-bg-light: #281835;
+  --color-terminal-fg: #f0c6ff;
+  --color-terminal-green: #7ee8a0;
+  --color-terminal-green-bright: #8ef8b0;
+  --color-terminal-red: #ff6b8a;
+  --color-terminal-red-bright: #ff8da6;
+  --color-terminal-yellow: #ffd580;
+  --color-terminal-yellow-bright: #ffe5a0;
+  --color-terminal-cyan: #80d4e8;
+  --color-terminal-cyan-bright: #a0e4f8;
+  --color-terminal-blue: #8aa8f0;
+  --color-terminal-blue-bright: #a0bfff;
+  --color-terminal-magenta: #e87ae0;
+  --color-terminal-magenta-bright: #f898f0;
+  --color-terminal-white: #f5e6ff;
+  --color-terminal-border: #3d2450;
+  --color-terminal-dim-text: #8a6a9a;
+  --color-terminal-dim-bg: #281835;
+  --color-terminal-highlight: #3d2450;
+  --color-terminal-selection-bg: #e87ae0;
+  --color-terminal-selection-fg: #1e1228;
+}
+
+/* Ocean — deep sea blues */
+.theme-ocean {
+  --color-terminal-bg: #0b1929;
+  --color-terminal-bg-light: #112240;
+  --color-terminal-fg: #a8d8ea;
+  --color-terminal-green: #64ffda;
+  --color-terminal-green-bright: #84ffea;
+  --color-terminal-red: #ff6b6b;
+  --color-terminal-red-bright: #ff8a8a;
+  --color-terminal-yellow: #ffd93d;
+  --color-terminal-yellow-bright: #ffe96d;
+  --color-terminal-cyan: #64ffda;
+  --color-terminal-cyan-bright: #84ffea;
+  --color-terminal-blue: #82b1ff;
+  --color-terminal-blue-bright: #a2c1ff;
+  --color-terminal-magenta: #c792ea;
+  --color-terminal-magenta-bright: #d7a2fa;
+  --color-terminal-white: #ccd6f6;
+  --color-terminal-border: #1d3557;
+  --color-terminal-dim-text: #4a6a8a;
+  --color-terminal-dim-bg: #112240;
+  --color-terminal-highlight: #1d3557;
+  --color-terminal-selection-bg: #64ffda;
+  --color-terminal-selection-fg: #0b1929;
+}
+
+/* Sunset — warm oranges and purples */
+.theme-sunset {
+  --color-terminal-bg: #1a1020;
+  --color-terminal-bg-light: #241530;
+  --color-terminal-fg: #ffa07a;
+  --color-terminal-green: #98d88a;
+  --color-terminal-green-bright: #a8e89a;
+  --color-terminal-red: #ff6b6b;
+  --color-terminal-red-bright: #ff8a8a;
+  --color-terminal-yellow: #ffd700;
+  --color-terminal-yellow-bright: #ffe740;
+  --color-terminal-cyan: #f0a0c0;
+  --color-terminal-cyan-bright: #ffb0d0;
+  --color-terminal-blue: #c0a0e0;
+  --color-terminal-blue-bright: #d0b0f0;
+  --color-terminal-magenta: #ff7eb3;
+  --color-terminal-magenta-bright: #ff98c3;
+  --color-terminal-white: #ffe4d6;
+  --color-terminal-border: #3a2040;
+  --color-terminal-dim-text: #8a6070;
+  --color-terminal-dim-bg: #241530;
+  --color-terminal-highlight: #3a2040;
+  --color-terminal-selection-bg: #ff7eb3;
+  --color-terminal-selection-fg: #1a1020;
+}
+
+/* Midnight — deep dark with blue accents */
+.theme-midnight {
+  --color-terminal-bg: #0d1117;
+  --color-terminal-bg-light: #161b22;
+  --color-terminal-fg: #c9d1d9;
+  --color-terminal-green: #56d364;
+  --color-terminal-green-bright: #66e374;
+  --color-terminal-red: #f85149;
+  --color-terminal-red-bright: #ff6b63;
+  --color-terminal-yellow: #e3b341;
+  --color-terminal-yellow-bright: #f3c351;
+  --color-terminal-cyan: #39d2c0;
+  --color-terminal-cyan-bright: #49e2d0;
+  --color-terminal-blue: #58a6ff;
+  --color-terminal-blue-bright: #79c0ff;
+  --color-terminal-magenta: #bc8cff;
+  --color-terminal-magenta-bright: #d2a8ff;
+  --color-terminal-white: #f0f6fc;
+  --color-terminal-border: #21262d;
+  --color-terminal-dim-text: #484f58;
+  --color-terminal-dim-bg: #161b22;
+  --color-terminal-highlight: #1f2937;
+  --color-terminal-selection-bg: #264f78;
+  --color-terminal-selection-fg: #f0f6fc;
+}
+
+/* Forest — natural greens and earth tones */
+.theme-forest {
+  --color-terminal-bg: #1a2416;
+  --color-terminal-bg-light: #223020;
+  --color-terminal-fg: #b8d4a0;
+  --color-terminal-green: #7ec850;
+  --color-terminal-green-bright: #90d860;
+  --color-terminal-red: #d45050;
+  --color-terminal-red-bright: #e46060;
+  --color-terminal-yellow: #c8b040;
+  --color-terminal-yellow-bright: #d8c050;
+  --color-terminal-cyan: #60b0a0;
+  --color-terminal-cyan-bright: #70c0b0;
+  --color-terminal-blue: #6090b0;
+  --color-terminal-blue-bright: #70a0c0;
+  --color-terminal-magenta: #a07090;
+  --color-terminal-magenta-bright: #b080a0;
+  --color-terminal-white: #d0e0c0;
+  --color-terminal-border: #304028;
+  --color-terminal-dim-text: #607050;
+  --color-terminal-dim-bg: #223020;
+  --color-terminal-highlight: #304028;
+  --color-terminal-selection-bg: #7ec850;
+  --color-terminal-selection-fg: #1a2416;
+}
+
+/* Retro Amber — old-school amber CRT */
+.theme-retro-amber {
+  --color-terminal-bg: #1a1200;
+  --color-terminal-bg-light: #221a00;
+  --color-terminal-fg: #ffb000;
+  --color-terminal-green: #ffb000;
+  --color-terminal-green-bright: #ffc030;
+  --color-terminal-red: #ff6600;
+  --color-terminal-red-bright: #ff8030;
+  --color-terminal-yellow: #ffd060;
+  --color-terminal-yellow-bright: #ffe080;
+  --color-terminal-cyan: #ffcc44;
+  --color-terminal-cyan-bright: #ffdd66;
+  --color-terminal-blue: #cc8800;
+  --color-terminal-blue-bright: #ddaa00;
+  --color-terminal-magenta: #ff8844;
+  --color-terminal-magenta-bright: #ff9966;
+  --color-terminal-white: #ffe0a0;
+  --color-terminal-border: #332800;
+  --color-terminal-dim-text: #886600;
+  --color-terminal-dim-bg: #221a00;
+  --color-terminal-highlight: #332800;
+  --color-terminal-selection-bg: #ffb000;
+  --color-terminal-selection-fg: #1a1200;
+}
+
+/* Lavender — soft purples and pastels */
+.theme-lavender {
+  --color-terminal-bg: #1a1525;
+  --color-terminal-bg-light: #221d30;
+  --color-terminal-fg: #d0c0f0;
+  --color-terminal-green: #a8d8b0;
+  --color-terminal-green-bright: #b8e8c0;
+  --color-terminal-red: #f0a0a0;
+  --color-terminal-red-bright: #ffb0b0;
+  --color-terminal-yellow: #e8d8a0;
+  --color-terminal-yellow-bright: #f8e8b0;
+  --color-terminal-cyan: #a0c8e0;
+  --color-terminal-cyan-bright: #b0d8f0;
+  --color-terminal-blue: #a0a8e0;
+  --color-terminal-blue-bright: #b0b8f0;
+  --color-terminal-magenta: #d0a0e0;
+  --color-terminal-magenta-bright: #e0b0f0;
+  --color-terminal-white: #e8e0f0;
+  --color-terminal-border: #302840;
+  --color-terminal-dim-text: #706080;
+  --color-terminal-dim-bg: #221d30;
+  --color-terminal-highlight: #302840;
+  --color-terminal-selection-bg: #d0a0e0;
+  --color-terminal-selection-fg: #1a1525;
+}
+
+/* High Contrast — maximum readability */
+.theme-high-contrast {
+  --color-terminal-bg: #000000;
+  --color-terminal-bg-light: #0a0a0a;
+  --color-terminal-fg: #ffffff;
+  --color-terminal-green: #00ff00;
+  --color-terminal-green-bright: #33ff33;
+  --color-terminal-red: #ff0000;
+  --color-terminal-red-bright: #ff3333;
+  --color-terminal-yellow: #ffff00;
+  --color-terminal-yellow-bright: #ffff33;
+  --color-terminal-cyan: #00ffff;
+  --color-terminal-cyan-bright: #33ffff;
+  --color-terminal-blue: #5555ff;
+  --color-terminal-blue-bright: #7777ff;
+  --color-terminal-magenta: #ff00ff;
+  --color-terminal-magenta-bright: #ff33ff;
+  --color-terminal-white: #ffffff;
+  --color-terminal-border: #333333;
+  --color-terminal-dim-text: #aaaaaa;
+  --color-terminal-dim-bg: #0a0a0a;
+  --color-terminal-highlight: #222222;
+  --color-terminal-selection-bg: #ffffff;
+  --color-terminal-selection-fg: #000000;
 }
