@@ -6,7 +6,7 @@ import SlashCommandMenu, { SlashCommand } from "./SlashCommandMenu";
 import WaitingIndicator from "./WaitingIndicator";
 import TerminalMarkdown from "./TerminalMarkdown";
 import CopyButton from "./CopyButton";
-import { encryptText } from "@/lib/crypto";
+import { encryptText, decryptText } from "@/lib/crypto";
 
 interface Message {
   role: "user" | "assistant" | "system";
@@ -39,7 +39,12 @@ export default function ChatTerminal({
   const [serverUrl, setServerUrl] = useState("");
   const [showHelp, setShowHelp] = useState(false);
   const [streamedContent, setStreamedContent] = useState("");
-  const [theme, setTheme] = useState("box");
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("awt_theme") || "box";
+    }
+    return "box";
+  });
   const [thinkingEnabled, setThinkingEnabled] = useState(true);
 
   const themes = [
@@ -180,10 +185,7 @@ export default function ChatTerminal({
           {
             name: "system",
             description: "Set system prompt (encrypted)",
-            action: () => {
-              setModalInput("");
-              setModalMode("system");
-            },
+            action: () => openSystemPromptModal(),
           },
         ]
       : []),
@@ -229,6 +231,22 @@ export default function ChatTerminal({
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     onLogout();
+  };
+
+  const openSystemPromptModal = async () => {
+    setModalInput("");
+    setModalMode("system");
+    try {
+      const res = await fetch("/api/settings");
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.encryptedSystemPrompt && data.systemPromptIv && password) {
+        const decrypted = await decryptText(data.encryptedSystemPrompt, data.systemPromptIv, password);
+        if (decrypted) setModalInput(decrypted);
+      }
+    } catch (err) {
+      console.error("Failed to load system prompt:", err);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -309,10 +327,12 @@ export default function ChatTerminal({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: newMessages.map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
+          messages: newMessages
+            .filter((m) => m.role !== "system")
+            .map((m) => ({
+              role: m.role,
+              content: m.content,
+            })),
           model: currentModel,
           password: isGuest ? undefined : password,
           lmStudioUrl: isGuest ? serverUrl : undefined,
@@ -524,10 +544,7 @@ export default function ChatTerminal({
           setModalInput(serverUrl);
           setModalMode("server");
         }}
-        onSetSystemPrompt={() => {
-          setModalInput("");
-          setModalMode("system");
-        }}
+        onSetSystemPrompt={() => openSystemPromptModal()}
         onLogout={handleLogout}
         onClear={() => {
           setMessages([]);
@@ -736,7 +753,7 @@ export default function ChatTerminal({
                   === Select Theme ===
                 </div>
                 <div className="text-terminal-dim-text text-xs mb-3">
-                  Theme resets on page refresh.
+                  Theme is saved locally.
                 </div>
                 <div className="space-y-1 max-h-60 overflow-y-auto">
                   {themes.map((t) => (
@@ -744,6 +761,7 @@ export default function ChatTerminal({
                       key={t.id}
                       onClick={() => {
                         setTheme(t.id);
+                        localStorage.setItem("awt_theme", t.id);
                         setModalMode(null);
                         setMessages((prev) => [
                           ...prev,

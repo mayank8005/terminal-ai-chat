@@ -21,10 +21,19 @@ export async function POST(req: NextRequest) {
         user.system_prompt_iv,
         password
       );
-      fullMessages.unshift({ role: "system", content: systemPrompt });
-    } catch {
-      // If decryption fails, continue without system prompt
+      if (systemPrompt) {
+        fullMessages.unshift({ role: "system", content: systemPrompt });
+        console.log("[chat] System prompt applied, length:", systemPrompt.length);
+      }
+    } catch (err) {
+      console.error("[chat] System prompt decryption failed:", err);
     }
+  } else {
+    console.log("[chat] No system prompt:", {
+      hasEncrypted: !!user?.encrypted_system_prompt,
+      hasIv: !!user?.system_prompt_iv,
+      hasPassword: !!password,
+    });
   }
 
   // Authenticated users use saved URL, guests pass it in the request

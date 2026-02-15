@@ -16,6 +16,8 @@ export async function GET() {
   return NextResponse.json({
     lmStudioUrl: user.lm_studio_url,
     hasSystemPrompt: !!user.encrypted_system_prompt,
+    encryptedSystemPrompt: user.encrypted_system_prompt,
+    systemPromptIv: user.system_prompt_iv,
   });
 }
 
